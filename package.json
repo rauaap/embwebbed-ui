@@ -12,5 +12,8 @@
   "dependencies": {
     "chokidar": "^3.5.3",
     "esbuild": "^0.19.11"
+  },
+  "devDependencies": {
+    "markserv": "github:rauaap/markserv#fix-exclusions"
   }
 }
