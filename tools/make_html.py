@@ -16,6 +16,8 @@ for file, name in html:
             l.strip() for l in f.read().split('\n') if l
         )
 
+    # Increment by one to account for the null byte
+    consts.append(f'// Length: {len(content) + 1}')
     consts.append(
         f'constexpr char {name}[] = R"htmldoc({content})htmldoc";'
     )
