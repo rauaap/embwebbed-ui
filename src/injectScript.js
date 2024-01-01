@@ -2,19 +2,13 @@ const esbuild = require('esbuild');
 const fs = require('fs');
 const path = require('path');
 
-const jsDir = path.join(__dirname, 'js');
-const htmlDir = path.join(__dirname, 'html');
-
-function injectScript(jsFile) {
-    const htmlFile = `${path.parse(jsFile).name}.html`;
-    const htmlPath = path.join(htmlDir, htmlFile);
-
-    if (!fs.existsSync(htmlPath)) {
+function injectScript(jsFilePath, htmlFilePath) {
+    if (!fs.existsSync(htmlFilePath)) {
         return 1;
     }
 
     const result = esbuild.buildSync({
-        entryPoints: [path.join(jsDir, jsFile)],
+        entryPoints: [jsFilePath],
         bundle: true,
         minify: true,
         write: false,
@@ -22,14 +16,14 @@ function injectScript(jsFile) {
 
     const injectScript = `<script>${result.outputFiles[0].text.trim()}</script>`;
 
-    let htmlContent = fs.readFileSync(htmlPath, 'utf-8');
+    let htmlContent = fs.readFileSync(htmlFilePath, 'utf-8');
 
     htmlContent = htmlContent.replace(
         /<!-- BEGIN_INJECTED -->.*<!-- END_INJECTED -->/,
         `<!-- BEGIN_INJECTED -->${injectScript}<!-- END_INJECTED -->`
     );
 
-    fs.writeFileSync(htmlPath, htmlContent);
+    fs.writeFileSync(htmlFilePath, htmlContent);
     return 0;
 }
 
