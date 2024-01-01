@@ -1,2 +1,2 @@
-autoreload
+livereload
 bottle
