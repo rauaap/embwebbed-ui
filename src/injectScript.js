@@ -1,10 +1,14 @@
 const esbuild = require('esbuild');
 const fs = require('fs');
 const path = require('path');
+const argParse = require('./argParse');
 
 function injectScript(jsFilePath, htmlFilePath) {
-    if (!fs.existsSync(htmlFilePath)) {
+    if (!fs.existsSync(jsFilePath)) {
         return 1;
+    }
+    if (!fs.existsSync(htmlFilePath)) {
+        return 2;
     }
 
     const result = esbuild.buildSync({
@@ -28,3 +32,16 @@ function injectScript(jsFilePath, htmlFilePath) {
 }
 
 module.exports = injectScript;
+
+if (require.main === module) {
+    const options = argParse();
+    const statusCode = injectScript(options.js, options.html);
+
+    const fileName = path.basename(options.js);
+    if (statusCode == 0) {
+        console.log(`Succesfully injected ${fileName}.`);
+    }
+    else {
+        console.log(`Could not inject ${fileName}. Process exited with status code ${statusCode}.`)
+    }
+}

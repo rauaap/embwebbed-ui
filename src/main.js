@@ -2,30 +2,9 @@ const path = require('path');
 const fs = require('fs');
 const chokidar = require('chokidar');
 const injectScript = require('./injectScript');
+const argParse = require('./argParse');
 
-const options = (() => {
-    const args = process.argv.slice(2);
-    const options = {htmlDir: null, jsDir: null}
-    let pos = 0;
-
-    for (let i = 0; i < 4; i += 2) {
-        const current = args[i];
-        const next = args[i + 1];
-
-        switch (current) {
-        case '--html':
-            options.htmlDir = next;
-            break;
-        case '--js':
-            options.jsDir = next;
-            break;
-        default:
-            return false;
-        }
-    }
-
-    return options;
-})();
+const options = argParse();
 
 if (!options) {
     console.error(
@@ -45,11 +24,11 @@ for (let opt of Object.values(options)) {
     }
 }
 
-const watcher = chokidar.watch(options.jsDir);
+const watcher = chokidar.watch(options.js);
 
 watcher.on('change', jsFilePath => {
     const fileName = path.parse(jsFilePath).name;
-    const htmlFilePath = path.join(options.htmlDir, `${fileName}.html`);
+    const htmlFilePath = path.join(options.html, `${fileName}.html`);
 
     const statusCode = injectScript(jsFilePath, htmlFilePath);
 
@@ -58,6 +37,8 @@ watcher.on('change', jsFilePath => {
             console.log(`Succesfully injected ${fileName}.js.`);
             break;
         case 1:
+            console.log(`${fileName}.js does not exist.`);
+        case 2:
             console.log(`No html file exists for ${fileName}.js.`);
             break;
         default:
