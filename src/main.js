@@ -24,7 +24,7 @@ for (let opt of Object.values(options)) {
     }
 }
 
-const watcher = chokidar.watch(options.js);
+const watcher = chokidar.watch(path.join(options.js, '*.js'));
 
 watcher.on('change', jsFilePath => {
     const fileName = path.parse(jsFilePath).name;
