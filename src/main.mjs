@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
-const path = require('path');
-const fs = require('fs');
-const chokidar = require('chokidar');
-const injectScript = require('./injectScript');
-const argParse = require('./argParse');
+import path from 'path';
+import fs from 'fs';
+import chokidar from 'chokidar';
+
+import injectScript from './injectScript.js';
+import argParse from './argParse.js';
 
 const options = argParse();
 
@@ -13,7 +14,7 @@ if (!options) {
         'Usage: node main.js --html [html file directory] --js [js file directory]'
     );
 
-    return;
+    process.exit(1);
 }
 
 for (const [key, value] of Object.entries(options)) {
@@ -27,23 +28,23 @@ for (const [key, value] of Object.entries(options)) {
             'Both --html and --js must provide existing directories.'
         );
 
-        return;
+        process.exit(1);
     }
 }
 
-const fileExtensions = ['*.js', '*.ts', '*.jsx', '*.tsx'];
+const fileExtensions = ['*.js', '*.ts', '*.jsx', '*.tsx', '*.svelte'];
 const watcher = chokidar.watch(
     fileExtensions.map( ext => path.join(options.js, ext) )
 );
 
-watcher.on('change', jsFilePath => {
+watcher.on('change', async jsFilePath => {
     const {base, name} = path.parse(jsFilePath);
     const htmlFilePath = path.join(options.html, `${name}.html`);
 
     let statusCode;
 
     try {
-        statusCode = injectScript(jsFilePath, htmlFilePath);
+        statusCode = await injectScript(jsFilePath, htmlFilePath);
     }
     catch (e) {
         console.log(e);

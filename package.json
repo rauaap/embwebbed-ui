@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "bin": {
-      "embwebbed": "src/main.js",
-      "make-html": "tools/make_html.py"
+    "embwebbed": "src/main.mjs",
+    "embwebbed-single": "src/single.mjs",
+    "make-html": "tools/make_html.py"
   },
   "main": "src/injectScript.js",
   "scripts": {
@@ -15,7 +16,8 @@
   "license": "ISC",
   "dependencies": {
     "chokidar": "^3.5.3",
-    "esbuild": "^0.19.11"
+    "esbuild": "^0.19.11",
+    "esbuild-svelte": "^0.8.0"
   },
   "devDependencies": {
     "markserv": "github:rauaap/markserv#fix-exclusions"

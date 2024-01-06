@@ -1,9 +1,10 @@
 const esbuild = require('esbuild');
+const sveltePlugin = require('esbuild-svelte');
 const fs = require('fs');
 const path = require('path');
 const argParse = require('./argParse');
 
-function injectScript(jsFilePath, htmlFilePath) {
+async function injectScript(jsFilePath, htmlFilePath) {
     if (!fs.existsSync(jsFilePath)) {
         return 1;
     }
@@ -12,7 +13,7 @@ function injectScript(jsFilePath, htmlFilePath) {
     }
 
     const clientEnv = { 'process.env.NODE_ENV': `"production"` };
-    const result = esbuild.buildSync({
+    const result = await esbuild.build({
         entryPoints: [jsFilePath],
         loader: {
             '.png': 'dataurl',
@@ -20,6 +21,9 @@ function injectScript(jsFilePath, htmlFilePath) {
             '.webp': 'dataurl',
             '.jpg': 'dataurl'
         },
+        plugins: [
+            sveltePlugin({compilerOptions: {customElement: true}})
+        ],
         bundle: true,
         minify: true,
         write: false,
@@ -44,15 +48,3 @@ function injectScript(jsFilePath, htmlFilePath) {
 
 module.exports = injectScript;
 
-if (require.main === module) {
-    const options = argParse();
-    const statusCode = injectScript(options.js, options.html);
-
-    const fileName = path.basename(options.js);
-    if (statusCode == 0) {
-        console.log(`Succesfully injected ${fileName}.`);
-    }
-    else {
-        console.log(`Could not inject ${fileName}. Process exited with status code ${statusCode}.`)
-    }
-}
