@@ -11,6 +11,7 @@ function injectScript(jsFilePath, htmlFilePath) {
         return 2;
     }
 
+    const clientEnv = { 'process.env.NODE_ENV': `"production"` };
     const result = esbuild.buildSync({
         entryPoints: [jsFilePath],
         loader: {
@@ -22,6 +23,7 @@ function injectScript(jsFilePath, htmlFilePath) {
         bundle: true,
         minify: true,
         write: false,
+        define: clientEnv
     });
 
     const injectScript = `<script>${result.outputFiles[0].text.trim()}</script>`;
