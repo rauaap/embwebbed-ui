@@ -21,8 +21,9 @@ for file, name in html_pairs:
         )
 
     consts.append(f'// Length (excluding terminating null byte): {len(content)}')
+    consts.append(f'constexpr uint32_t len{name.capitalize()}Html = {len(content) + 1};')
     consts.append(
-        f'constexpr char {name}[] = R"htmldoc({content})htmldoc";'
+        f'constexpr char {name}Html[] PROGMEM = R"htmldoc({content})htmldoc";'
     )
 
 with open(args.output_file, 'w') as f:
