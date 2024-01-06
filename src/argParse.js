@@ -1,25 +1,28 @@
 function argParse() {
     const args = process.argv.slice(2);
     const options = {html: null, js: null}
-    let pos = 0;
 
-    for (let i = 0; i < 4; i += 2) {
-        const current = args[i];
-        const next = args[i + 1];
-
-        switch (current) {
+    for (let pos = 0; args[pos]; pos++) {
+        switch (args[pos]) {
         case '--html':
-            options.html = next;
+            options.html = args[++pos];
             break;
         case '--js':
-            options.js = next;
+            options.js = args[++pos];
             break;
+        case undefined:
+            return options;
         default:
             return false;
         }
     }
 
-    return options;
+    if (options.html === undefined || options.js === undefined) {
+        return false;
+    }
+    else {
+        return options;
+    }
 };
 
 module.exports = argParse;
