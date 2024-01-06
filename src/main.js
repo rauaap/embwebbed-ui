@@ -31,22 +31,25 @@ for (const [key, value] of Object.entries(options)) {
     }
 }
 
-const watcher = chokidar.watch(path.join(options.js, '*.js'));
+const fileExtensions = ['*.js', '*.ts', '*.jsx', '*.tsx'];
+const watcher = chokidar.watch(
+    fileExtensions.map( ext => path.join(options.js, ext) )
+);
 
 watcher.on('change', jsFilePath => {
-    const fileName = path.parse(jsFilePath).name;
-    const htmlFilePath = path.join(options.html, `${fileName}.html`);
+    const {base, name} = path.parse(jsFilePath);
+    const htmlFilePath = path.join(options.html, `${name}.html`);
 
     const statusCode = injectScript(jsFilePath, htmlFilePath);
 
     switch (statusCode) {
         case 0:
-            console.log(`Succesfully injected ${fileName}.js.`);
+            console.log(`Succesfully injected ${base}.`);
             break;
         case 1:
-            console.log(`${fileName}.js does not exist.`);
+            console.log(`${base} does not exist.`);
         case 2:
-            console.log(`No html file exists for ${fileName}.js.`);
+            console.log(`No html file exists for ${base}.`);
             break;
         default:
             break;
