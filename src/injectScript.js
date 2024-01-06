@@ -27,15 +27,18 @@ function injectScript(jsFilePath, htmlFilePath) {
     });
 
     const injectScript = `<script>${result.outputFiles[0].text.trim()}</script>`;
+    const htmlContent = fs.readFileSync(htmlFilePath, 'utf-8');
 
-    let htmlContent = fs.readFileSync(htmlFilePath, 'utf-8');
+    const startMarker = '<!-- BEGIN_INJECTED -->';
+    const endMarker = '<!-- END_INJECTED -->';
+    const injectionStart = htmlContent.indexOf(startMarker) + startMarker.length;
+    const injectionEnd = htmlContent.indexOf(endMarker);
+    const beforeInjected = htmlContent.slice(0, injectionStart);
+    const afterInjected = htmlContent.slice(injectionEnd);
 
-    htmlContent = htmlContent.replace(
-        /<!-- BEGIN_INJECTED -->.*<!-- END_INJECTED -->/,
-        `<!-- BEGIN_INJECTED -->${injectScript}<!-- END_INJECTED -->`
-    );
+    const newContent = beforeInjected.concat(injectScript, afterInjected);
 
-    fs.writeFileSync(htmlFilePath, htmlContent);
+    fs.writeFileSync(htmlFilePath, newContent);
     return 0;
 }
 
