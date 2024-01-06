@@ -13,6 +13,12 @@ function injectScript(jsFilePath, htmlFilePath) {
 
     const result = esbuild.buildSync({
         entryPoints: [jsFilePath],
+        loader: {
+            '.png': 'dataurl',
+            '.svg': 'dataurl',
+            '.webp': 'dataurl',
+            '.jpg': 'dataurl'
+        },
         bundle: true,
         minify: true,
         write: false,
