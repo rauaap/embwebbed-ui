@@ -16,8 +16,13 @@ if (!options) {
     return;
 }
 
-for (let opt of Object.values(options)) {
-    if (!fs.existsSync(opt) || !fs.statSync(opt).isDirectory()) {
+for (const [key, value] of Object.entries(options)) {
+    if (value === null) {
+        options[key] = '.';
+        continue;
+    }
+
+    if (!fs.existsSync(value) || !fs.statSync(value).isDirectory()) {
         console.error(
             'Both --html and --js must provide existing directories.'
         );
