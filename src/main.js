@@ -40,7 +40,14 @@ watcher.on('change', jsFilePath => {
     const {base, name} = path.parse(jsFilePath);
     const htmlFilePath = path.join(options.html, `${name}.html`);
 
-    const statusCode = injectScript(jsFilePath, htmlFilePath);
+    let statusCode;
+
+    try {
+        statusCode = injectScript(jsFilePath, htmlFilePath);
+    }
+    catch (e) {
+        console.log(e);
+    }
 
     switch (statusCode) {
         case 0:
